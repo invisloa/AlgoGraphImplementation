@@ -1,122 +1,135 @@
-﻿using System;
+﻿using AlgoGraphImplementation;
+using System;
 using System.Collections.Generic;
 
 public class Graph
 {
-	public List<int> Nodes { get; private set; }
-	public List<List<int>> AdjacencyList { get; private set; }
+	public List<GraphNode> Nodes { get; private set; }
 
 	public Graph()
 	{
-		Nodes = new List<int>();
-		AdjacencyList = new List<List<int>>();
+		Nodes = new List<GraphNode>();
 	}
 
-	public int GetIndex(int node)
+	public GraphNode GetNode(int value)
 	{
-		return Nodes.IndexOf(node);
+		return Nodes.Find(node => node.Value == value);
 	}
 
-	public void AddNode(int node)
+	public void AddNode(int value)
 	{
-		if (!Nodes.Contains(node))
+		if (GetNode(value) == null)
 		{
-			Nodes.Add(node);
-			AdjacencyList.Add(new List<int>());
+			Nodes.Add(new GraphNode(value));
 		}
 	}
 
-	public void RemoveNode(int node)
+	public void RemoveNode(int value)
 	{
-		int index = GetIndex(node);
-		if (index != -1)
+		GraphNode nodeToRemove = GetNode(value);
+		if (nodeToRemove != null)
 		{
-			Nodes.RemoveAt(index);
-			AdjacencyList.RemoveAt(index);
-
-			foreach (var neighbors in AdjacencyList)
+			Nodes.Remove(nodeToRemove);
+			foreach (var node in Nodes)
 			{
-				neighbors.Remove(node);
+				node.Neighbors.Remove(nodeToRemove);
 			}
 		}
 	}
 
 	public void AddEdge(int from, int to)
 	{
-		AddNode(from);
-		AddNode(to);
-		int indexFrom = GetIndex(from);
-		int indexTo = GetIndex(to);
-		AdjacencyList[indexFrom].Add(to);
-		AdjacencyList[indexTo].Add(from); // Add the reverse edge for an undirected graph
+		GraphNode fromNode = GetNode(from);
+		if (fromNode == null)
+		{
+			fromNode = new GraphNode(from);
+			Nodes.Add(fromNode);
+		}
+
+		GraphNode toNode = GetNode(to);
+		if (toNode == null)
+		{
+			toNode = new GraphNode(to);
+			Nodes.Add(toNode);
+		}
+
+		fromNode.Neighbors.Add(toNode);
+		toNode.Neighbors.Add(fromNode);
 	}
 
 	public void RemoveEdge(int from, int to)
 	{
-		int indexFrom = GetIndex(from);
-		int indexTo = GetIndex(to);
-		if (indexFrom != -1)
+		GraphNode fromNode = GetNode(from);
+		GraphNode toNode = GetNode(to);
+
+		if (fromNode != null && toNode != null)
 		{
-			AdjacencyList[indexFrom].Remove(to);
-		}
-		if (indexTo != -1)
-		{
-			AdjacencyList[indexTo].Remove(from); // Remove the reverse edge for an undirected graph
+			fromNode.Neighbors.Remove(toNode);
+			toNode.Neighbors.Remove(fromNode);
 		}
 	}
 
 	public List<int> BFS(int start)
 	{
+		var startNode = GetNode(start);
+		if (startNode == null)
+		{
+			return new List<int>(); // Return an empty list if the start node is not in the graph
+		}
+
 		var visited = new HashSet<int>();
-		var queue = new Queue<int>();
+		var queue = new Queue<GraphNode>();
 		var bfsTraversal = new List<int>();
 
-		queue.Enqueue(start);
+		queue.Enqueue(startNode);
 
 		while (queue.Count > 0)
 		{
-			int node = queue.Dequeue();
+			GraphNode node = queue.Dequeue();
 
-			if (!visited.Contains(node))
+			if (!visited.Contains(node.Value))
 			{
-				visited.Add(node);
-				bfsTraversal.Add(node);
+				visited.Add(node.Value);
+				bfsTraversal.Add(node.Value);
 
-				int index = GetIndex(node);
-				foreach (var neighbor in AdjacencyList[index])
+				foreach (var neighbor in node.Neighbors)
 				{
-					if (!visited.Contains(neighbor))
+					if (!visited.Contains(neighbor.Value))
 					{
 						queue.Enqueue(neighbor);
 					}
 				}
 			}
 		}
-
 		return bfsTraversal;
 	}
 
 	public List<int> DFS(int start)
 	{
+		var startNode = GetNode(start);
+		if (startNode == null)
+		{
+			return new List<int>(); // Return an empty list if the start node is not in the graph
+		}
+
 		var visited = new HashSet<int>();
-		var stack = new Stack<int>();
+		var stack = new Stack<GraphNode>();
 		var dfsTraversal = new List<int>();
 
-		stack.Push(start);
+		stack.Push(startNode);
 
 		while (stack.Count > 0)
 		{
-			int node = stack.Pop();
+			GraphNode node = stack.Pop();
 
-			if (!visited.Contains(node))
+			if (!visited.Contains(node.Value))
 			{
-				visited.Add(node);
-				dfsTraversal.Add(node);
+				visited.Add(node.Value);
+				dfsTraversal.Add(node.Value);
 
-				int index = GetIndex(node);
-				foreach (var neighbor in AdjacencyList[index])
+				foreach (var neighbor in node.Neighbors)
 				{
-					if (!visited.Contains(neighbor))
+					if (!visited.Contains(neighbor.Value))
 					{
 						stack.Push(neighbor);
 					}
@@ -125,6 +138,15 @@ public class Graph
 		}
 
 		return dfsTraversal;
+	}
+	public void PrintAllNodes()
+	{
+		Console.WriteLine("All nodes in the graph:");
+		foreach (var node in Nodes)
+		{
+			Console.Write(node.Value + " ");
+		}
+		Console.WriteLine();
 	}
 }
 // Klasa Program zawierająca metodę Main() do testowania klasy Graph
@@ -144,8 +166,8 @@ public class Program
 		graph.AddEdge(4, 8);
 		graph.AddEdge(4, 9);
 		graph.AddEdge(6, 11);
-		graph.AddEdge(6, 10);
 		graph.RemoveEdge(2, 4);
+		graph.PrintAllNodes();
 
 
 
