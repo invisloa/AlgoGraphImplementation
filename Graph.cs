@@ -70,7 +70,7 @@ namespace AlgoGraphImplementation
 				toNode.Neighbors.Remove(fromNode);
 			}
 		}
-
+		// BFS(Breadth-First Search)
 		public List<int> BFS(int start)
 		{
 			var startNode = GetNode(start);
@@ -105,7 +105,7 @@ namespace AlgoGraphImplementation
 			}
 			return bfsTraversal;
 		}
-
+		//DFS (Depth-First Search)
 		public List<int> DFS(int start)
 		{
 			var startNode = GetNode(start);
