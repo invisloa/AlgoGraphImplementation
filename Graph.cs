@@ -16,14 +16,18 @@ namespace AlgoGraphImplementation
 
 		public GraphNode GetNode(int value)
 		{
-			return Nodes.Find(node => node.Value == value);
+			return Nodes.Find(node => node.Value == value);			// using linq find
 		}
 		public void AddNode(int value)
 		{
-			if (GetNode(value) == null)
+			if (GetNode(value) == null)								// cannot add value if the falue already exists
 			{
 				Nodes.Add(new GraphNode(value));
 			}
+			else
+			{
+                Console.WriteLine($"Node {value} already exists");
+            }
 		}
 
 		public void RemoveNode(int value)
@@ -37,6 +41,11 @@ namespace AlgoGraphImplementation
 					node.Neighbors.Remove(nodeToRemove);
 				}
 			}
+			else
+			{
+				Console.WriteLine($"Node {value} doesn't exist");
+			}
+
 		}
 
 		public void AddEdge(int from, int to)
@@ -54,9 +63,15 @@ namespace AlgoGraphImplementation
 				toNode = new GraphNode(to);
 				Nodes.Add(toNode);
 			}
-
-			fromNode.Neighbors.Add(toNode);
-			toNode.Neighbors.Add(fromNode);
+			if (!fromNode.Neighbors.Contains(toNode))
+			{
+				fromNode.Neighbors.Add(toNode);
+				toNode.Neighbors.Add(fromNode);
+			}
+			else
+			{
+                Console.WriteLine($"Edge from {from}, to {to} already exists.");
+            }
 		}
 
 		public void RemoveEdge(int from, int to)
@@ -111,14 +126,15 @@ namespace AlgoGraphImplementation
 			var startNode = GetNode(start);
 			if (startNode == null)
 			{
-				return new List<int>(); // Return an empty list if the start node is not in the graph
+                Console.WriteLine("There is no Node of value {0}", start);
+                return new List<int>(); // Return an empty list if the start node is not in the graph
 			}
 
 			var visited = new HashSet<int>();
 			var stack = new Stack<GraphNode>();
 			var dfsTraversal = new List<int>();
 
-			stack.Push(startNode);
+			stack.Push(startNode);				
 
 			while (stack.Count > 0)
 			{
