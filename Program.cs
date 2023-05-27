@@ -14,7 +14,8 @@ graph.AddEdge(6, 11);
 graph.RemoveEdge(2, 4);
 graph.PrintAllNodes();
 
-// Wykonanie przeszukiwania wszerz grafu od wierzchołka 1
+//Breadth-First Search (BFS)
+// Wykonanie przeszukiwania wszerz grafu od wierzchołka X
 Console.WriteLine("BFS traversal:");
 var bfs = graph.BFS(4);
 foreach (var node in bfs)
@@ -23,7 +24,8 @@ foreach (var node in bfs)
 	}
 Console.WriteLine();
 
-// Wykonanie przeszukiwania w głąb grafu od wierzchołka 1
+//Depth-First Search (DFS) 
+// Wykonanie przeszukiwania w głąb grafu od wierzchołka X
 Console.WriteLine("DFS traversal:");
 var dfs = graph.DFS(3);
 foreach (var node in dfs)
